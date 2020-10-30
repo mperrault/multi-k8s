@@ -1,0 +1,13 @@
+docker build -t mperrault/multi-client:latest -t mperrault/multi-client:$SHA -f ./client/Dockerfile ./client
+docker build -t mperrault/multi-server:latest -t mperrault/multi-server:$SHA -f ./server/Dockerfile ./server
+docker build -t mperrault/multi-worker:latest -t mperrault/multi-worker:$SHA -f ./worker/Dockerfile ./worker
+docker push mperrault/multi-client:latest
+docker push mperrault/multi-client:$SHA
+docker push mperrault/multi-server:latest
+docker push mperrault/multi-server:$SHA
+docker push mperrault/multi-worker:latest
+docker push mperrault/multi-worker:$SHA
+kubectl apply -f k8s
+kubectl set image deployments/server-deployment server=mperrault/multi-server:$SHA
+kubectl set image deployments/client-deployment server=mperrault/multi-client:$SHA
+kubectl set image deployments/worker-deployment server=mperrault/multi-worker:$SHA
